@@ -112,22 +112,7 @@ void Contrarian_Init()
 
     PR_Step = 2*PI*AC_FRE/CurLoop_FRE;
 
-    Pos_PID_Init(&Current_Controller,0.01f,0.05f,0.0f);
-    Current_Controller.Output_Max = 0.49f;
-    Current_Controller.Output_Min = -0.49f;
-    Current_Controller.Ref = 0.0f;
-    Current_Controller.Value_I_Max = 30000.0f; 
-
-    MD = 0.8777777777f;
-    Pos_PID_Init(&OpenVolt_Controller,0.0f,0.001f,0.0f);
-    OpenVolt_Controller.Output_Max = 0.95f;
-    OpenVolt_Controller.Output_Min = 0.05f;
-    OpenVolt_Controller.Ref = 24.0f;
-    OpenVolt_Controller.Value_I_Max = 50000.0f; 
-
-#elif Device == 2
-    PR_Step = 2*PI*AC_FRE/CurLoop_FRE;
-    Pos_PID_Init(&Current_Controller,0.00f,-0.01f,0.0f);
+    Pos_PID_Init(&Current_Controller,0.00f,-0.006f,0.0f);
     Current_Controller.Output_Max = 0.48f;
     Current_Controller.Output_Min = -0.48f;
     Current_Controller.Ref = 0.0f;
@@ -137,7 +122,21 @@ void Contrarian_Init()
     OpenVolt_Controller.Output_Max = 0.95f;
     OpenVolt_Controller.Output_Min = 0.05f;
     OpenVolt_Controller.Ref = 24.0f;
-    OpenVolt_Controller.Value_I_Max = 5000.0f; 
+    OpenVolt_Controller.Value_I_Max = 10000.0f; 
+
+#elif Device == 2
+    PR_Step = 2*PI*AC_FRE/CurLoop_FRE;
+    Pos_PID_Init(&Current_Controller,0.00f,-0.007f,0.0f);
+    Current_Controller.Output_Max = 0.48f;
+    Current_Controller.Output_Min = -0.48f;
+    Current_Controller.Ref = 0.0f;
+    Current_Controller.Value_I_Max = 10000.0f; 
+
+    Pos_PID_Init(&OpenVolt_Controller,0.01f,0.0006f,0.0f);
+    OpenVolt_Controller.Output_Max = 0.95f;
+    OpenVolt_Controller.Output_Min = 0.05f;
+    OpenVolt_Controller.Ref = 24.0f;
+    OpenVolt_Controller.Value_I_Max = 10000.0f;  
 
 #endif
 
@@ -161,7 +160,7 @@ void Contrarian_Init()
 
     System_Flag_Data.Contrarian_Bridge_State = OFF;
     System_Flag_Data.Contrarian_State = System_Stop;
-    InverterState = BusVoltageJudge;
+    InverterState = GridConnectionJudge;
     InverterMode = InitValue;
     VoltLoop_Flag = 0;
     CurrLoop_Flag = 0;
@@ -228,7 +227,7 @@ bool ModeDetect()
     
     if(flag < (uint16_t)(Detect_Time*IT_FRE))
     {
-        GridDetecter.v = ADC_Data.Vout;
+        GridDetecter.v = ADC_Data.Vgrid;
         POWER_MEAS_SINE_ANALYZER_run(&GridDetecter);
         flag ++;
     }

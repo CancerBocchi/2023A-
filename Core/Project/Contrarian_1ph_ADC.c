@@ -5,10 +5,10 @@ inline void ADC_Conversion(ADC_ValueTypeDef *ADC_Data)
 {
 #if Device == 1
 
-    ADC_Data->Vout = ((float)ADC_Data->Raw_Value[0] * Kraw - V_Offset) * Kvoltage;
+    ADC_Data->Vout = ((float)ADC_Data->Raw_Value[0] * Kraw - V_Offsetout) * Kvoltage ;
     ADC_Data->Iout = ((float)ADC_Data->Raw_Value[1] * Kraw ) * Kcurrent - I_Offset; 
     ADC_Data->Vbus = ((float)ADC_Data->Raw_Value[2] * Kraw * Kbus);
-    ADC_Data->Vgrid = ((float)ADC_Data->Raw_Value[3] * Kraw - V_Offset) * Kvoltage;
+    ADC_Data->Vgrid = ((float)ADC_Data->Raw_Value[3] * Kraw - V_Offsetgrid) * Kvoltage;
 #elif Device == 2
 //
 //Vout 自己输出测的电压
@@ -35,7 +35,7 @@ inline void ADC_Conversion(ADC_ValueTypeDef *ADC_Data)
 
 #if VALUEOUT_PRINT == ON
 
-    //SEGGER_RTT_printf(0,"%d\n",FLOAT_PRINTF(ADC_Data->Raw_Value[3] * Kraw));
+    SEGGER_RTT_printf(0,"%d,%d\n",FLOAT_PRINTF(ADC_Data->Vout),FLOAT_PRINTF(ADC_Data->Iout));
 
 #endif
 
@@ -44,8 +44,8 @@ inline void ADC_Conversion(ADC_ValueTypeDef *ADC_Data)
     static float offset[2];
     if(flag < 2000)
     {
-        offset[0] += ADC_Data->Raw_Value[3] * Kraw;
-        offset[1] += ADC_Data->Raw_Value[1] * Kraw;
+        offset[0] += ADC_Data->Raw_Value[0] * Kraw;
+        offset[1] += ADC_Data->Raw_Value[3] * Kraw;
         flag ++;
     }
     if(flag == 2000)

@@ -39,10 +39,9 @@ typedef enum
 
 typedef enum
 {
-    BusVoltageJudge     = 0x00,
-    GridConnectionJudge = 0x01,
-    SpllLockedJudge     = 0x02,
-    InverterRun         = 0x03,
+    GridConnectionJudge = 0x00,
+    SpllLockedJudge     = 0x01,
+    InverterRun         = 0x02,
 }Inverter_Flag;
 
 extern Pos_PID_t          Voltage_Controller;

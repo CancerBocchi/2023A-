@@ -9,7 +9,8 @@
     #define Kcurrent   3.0108f
     #define Kvoltage   32.678f
     #define I_Offset 3.7548f
-    #define V_Offset 1.2412f
+    #define V_Offsetout 1.2412f
+    #define V_Offsetgrid 1.241f
     #define Kbus        1.0f
 #elif Device == 2
     #define Kraw        0.000732421875f //3.0f/4096.0f

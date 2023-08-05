@@ -112,18 +112,17 @@ void lab5()
         Mea_Mode.v = ADC_Data.Vout;
         Mea_Mode.i = ADC_Data.Iout;
         POWER_MEAS_SINE_ANALYZER_run(&Mea_Mode);
+        Keyboard_Input_Data[0] = OpenVolt_Controller.Ref ;
         VrmsFliter += Mea_Mode.vRms;
         VoltLoop_Flag++;
         ThetaUpdata();
-        LoopDutyOut =  MD * sin(PR_theta) * 0.48f + 0.5f;
         if(VoltLoop_Flag == VoltFlag)
         {
             VrmsFliter = VrmsFliter/(float)VoltFlag;
-            MD = Pos_PID_Controller(&OpenVolt_Controller,VrmsFliter);
+            LoopDutyOut = Pos_PID_Controller(&OpenVolt_Controller,VrmsFliter) * sin(PR_theta) * 0.48f + 0.5f;
             VrmsFliter = 0.0f;
             VoltLoop_Flag = 0;
         }
-        
         hhrtim1.Instance->sMasterRegs.MCMP1R = hhrtim1.Instance->sMasterRegs.MPER
                                         * LoopDutyOut;
 }
@@ -228,7 +227,7 @@ void lab8()
         POWER_MEAS_SINE_ANALYZER_run(&Mea_Mode);
         VrmsFliter += Mea_Mode.vRms;
         VoltLoop_Flag++;
-
+        Keyboard_Input_Data[0] = OpenVolt_Controller.Ref;
         if(VoltLoop_Flag == VoltFlag)
         {
             VrmsFliter = VrmsFliter/(float)VoltFlag;
@@ -243,22 +242,11 @@ void lab8()
 
 void Inver1()
 {
-    static int temp;
-    //
-    //母线电压判定
-    //
-    if(InverterState == BusVoltageJudge)
-    {
-        ADC_Data.Vbus > 2.51f ? 
-        temp++ : (temp=0);
 
-        if(temp == 200)
-            InverterState = GridConnectionJudge;
-    }
     //
     //并网离网判定
     //
-    else if(InverterState == GridConnectionJudge)
+    if(InverterState == GridConnectionJudge)
     {  
         if(ModeDetect())//判定完标志位更改 防止继续判定
             InverterState = InverterRun;
@@ -292,29 +280,11 @@ void Inver1()
 
 void Inver2()
 {
-    static int temp;
     static float pastsin;
-    //
-    //母线电压判定
-    //
-    if(InverterState == BusVoltageJudge)
-    {
-        if(ADC_Data.Vbus > 2.51f)
-            temp++ ;
-        else
-            temp=0;
-
-        if(temp == 200)
-        {
-            InverterState = InverterRun;
-        }
-        LOW_C13;
-    }
-
     //
     //锁相后开始跑环路
     //
-    else if(InverterState == InverterRun)
+    if(InverterState == InverterRun)
     {
         if(SPLL_run())
         {

@@ -54,17 +54,68 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)//adc转换完后进入中
     }
 #else
     #if Device == 1
+
+    static uint32_t temp = 0;
+    static float preValue;
+    static bool looprun = false;
     if(System_Flag_Data.Contrarian_State == System_Run)
     {
-        //Contrarian_Bridge_Switch(ON);
-        Inver1();
-        //lab5();
-        Protect_Program();
+        //
+        //并网离网判定
+        //
+        if(InverterState == GridConnectionJudge)
+        {  
+            if(ModeDetect())//判定完标志位更改 防止继续判定
+                InverterState = InverterRun;
+        }
+        //
+        //并网离网环路run
+        //
+        else if(InverterState == InverterRun)
+        {
+            if(InverterMode == OutofGird)
+            {
+                Contrarian_Bridge_Switch(ON);
+                HAL_GPIO_WritePin(GPIOB,GPIO_PIN_14,1);
+                lab5();//电压环
+                LOW_C13;
+            }
+            else if(InverterMode == IntoGird)
+            {
+                SPLL_run();
+                if(temp<100000)
+                    temp++;
+                else
+                {
+                    if(ADC_Data.Vgrid>0.0f && preValue<0.0f)
+                    {
+                        Contrarian_Bridge_Switch(ON);
+                        HAL_GPIO_WritePin(GPIOB,GPIO_PIN_14,1);
+                        looprun = true;
+                    }
+                    if(looprun)
+                    {
+                        Slew_Func(&PR_Rms,Keyboard_Input_Data[1],0.001f);
+                        lab7();//电流环
+                    }
+                }
+                High_C13;
+            }
+            Protect_Program();
+            preValue = ADC_Data.Vgrid;
+        }
     }
+        
     else
     {
+        HAL_GPIO_WritePin(GPIOB,GPIO_PIN_14,0);
         Contrarian_Bridge_Switch(OFF);
         SystemStop();
+        looprun = false;
+        temp = 0;
+        PR_Rms = 0.0f;
+        InverterMode = InitValue;
+        InverterState == GridConnectionJudge;
     }
 
     #elif Device == 2
@@ -72,7 +123,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)//adc转换完后进入中
     static uint32_t flag = 0;
     static bool looprun = false;
     static float preVal;
-    static bool softstart = false;
     if(System_Flag_Data.Contrarian_State == System_Run)
     {
         //Inver2();
@@ -95,13 +145,14 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)//adc转换完后进入中
                 // LoopDutyOut = 0.12804f*SPLL_Mode.sine + 0.5f;
                 // hhrtim1.Instance->sMasterRegs.MCMP1R = hhrtim1.Instance->sMasterRegs.MPER
                 //                                 * LoopDutyOut;
-                if(!softstart)
-                {
-                    if(PR_Rms < 1.8f)
-                        PR_Rms += 0.00001f;
-                    else
-                        softstart = true;
-                }
+                // if(!softstart)
+                // {
+                //     if(PR_Rms < 2.0f)
+                //         PR_Rms += 0.00001f;
+                //     else
+                //         softstart = true;
+                // }
+                Slew_Func(&PR_Rms,1.3f,0.0001f);
                 lab7();
             }
         }
@@ -120,7 +171,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)//adc转换完后进入中
         SystemStop();
         looprun = false;
         flag = 0;
-        softstart = false;
         PR_Rms = 0;
     }
 
