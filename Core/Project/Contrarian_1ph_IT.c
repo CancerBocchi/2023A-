@@ -85,7 +85,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)//adc转换完后进入中
                 SPLL_run();
                 if(temp<100000)
                     temp++;
-                else
+                else 
                 {
                     if(ADC_Data.Vgrid>0.0f && preValue<0.0f)
                     {
@@ -95,7 +95,10 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)//adc转换完后进入中
                     }
                     if(looprun)
                     {
-                        Slew_Func(&PR_Rms,Keyboard_Input_Data[1],0.001f);
+                        Total_Iref = Keyboard_Input_Data[1];
+                        I_Proportion = Keyboard_Input_Data[2];
+                        Device_Iref = Total_Iref * I_Proportion / ( I_Proportion + 1 );
+                        Slew_Func(&PR_Rms,Device_Iref,0.001f);
                         lab7();//电流环
                     }
                 }
@@ -115,7 +118,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)//adc转换完后进入中
         temp = 0;
         PR_Rms = 0.0f;
         InverterMode = InitValue;
-        InverterState == GridConnectionJudge;
+        InverterState = GridConnectionJudge;
     }
 
     #elif Device == 2
@@ -152,7 +155,11 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)//adc转换完后进入中
                 //     else
                 //         softstart = true;
                 // }
-                Slew_Func(&PR_Rms,1.3f,0.0001f);
+                Total_Iref = Keyboard_Input_Data[1];
+                I_Proportion = Keyboard_Input_Data[2];
+                Device_Iref = Total_Iref  / ( I_Proportion + 1 );
+                Slew_Func(&PR_Rms,Device_Iref,0.0001f);
+                //Slew_Func(&PR_Rms,1.4f,0.0001f);
                 lab7();
             }
         }
@@ -177,6 +184,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)//adc转换完后进入中
     #endif
 
 #endif
-    HAL_DAC_SetValue(&hdac1,DAC_CHANNEL_1,DAC_ALIGN_12B_R,(uint32_t)((SPLL_Mode.sine+1.1f)*1000.0f));
+    HAL_DAC_SetValue(&hdac1,DAC_CHANNEL_1,DAC_ALIGN_12B_R,(uint32_t)((SPLL_Mode.sine)*1000.0f+2048.0f));
 
 }

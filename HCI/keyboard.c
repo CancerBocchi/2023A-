@@ -248,19 +248,19 @@ void Keyboard_OLED(float *Data)
     {
         DrawString(6,22,"Vref:",1,0);
         DrawString(6,34,"Iref:",1,1);
-        DrawString(6,46,"Data3:",1,1);
+        DrawString(6,46,"Prop:",1,1);
     }
     if(KeyBoardData.VariableNum == 1)
     {
         DrawString(6,22,"Vref:",1,1);
         DrawString(6,34,"Iref:",1,0);
-        DrawString(6,46,"Data3:",1,1);
+        DrawString(6,46,"Prop:",1,1);
     }
     if(KeyBoardData.VariableNum == 2)
     {
         DrawString(6,22,"Vref:",1,1);
         DrawString(6,34,"Iref:",1,1);
-        DrawString(6,46,"Data3:",1,0); 
+        DrawString(6,46,"Prop:",1,0); 
     }
 
     OLED_DrawFloat(42,22,Data[0]);

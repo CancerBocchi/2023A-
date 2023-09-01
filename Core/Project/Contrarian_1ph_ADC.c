@@ -45,7 +45,7 @@ inline void ADC_Conversion(ADC_ValueTypeDef *ADC_Data)
     if(flag < 2000)
     {
         offset[0] += ADC_Data->Raw_Value[0] * Kraw;
-        offset[1] += ADC_Data->Raw_Value[3] * Kraw;
+        offset[1] += ADC_Data->Raw_Value[1] * Kraw;
         flag ++;
     }
     if(flag == 2000)

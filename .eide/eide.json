@@ -55,7 +55,7 @@
           "cpuName": "STM32G474RB"
         },
         "proType": 1,
-        "speed": 6000,
+        "speed": 4000,
         "otherCmds": ""
       },
       "uploadConfigMap": {

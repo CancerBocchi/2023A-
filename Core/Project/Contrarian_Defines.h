@@ -12,7 +12,7 @@
 #define PI_ 0
 //选择性编译
 #define OFFEST_GET OFF
-#define VALUEOUT_PRINT OFF
+#define VALUEOUT_PRINT ON
 
 #define SingleCurrentLoop OFF
 #define LOOPOUT_PRINT  0
@@ -20,7 +20,7 @@
 #define LOOPTEST OFF
 
 
-#define Device 2
+#define Device 1
 //常数
 #define SQRT_2 1.414213562373f
 

@@ -31,6 +31,9 @@ float Max_Voltage;
 float Max_Current;
 float VrmsFliter;
 float MD;
+float Total_Iref;//总电流期望
+float Device_Iref;//设备电流期望
+float I_Proportion;//电流比例
 
 uint8_t VoltLoop_Flag;
 uint8_t CurrLoop_Flag;
@@ -112,11 +115,11 @@ void Contrarian_Init()
 
     PR_Step = 2*PI*AC_FRE/CurLoop_FRE;
 
-    Pos_PID_Init(&Current_Controller,0.00f,-0.006f,0.0f);
-    Current_Controller.Output_Max = 0.48f;
-    Current_Controller.Output_Min = -0.48f;
+    Pos_PID_Init(&Current_Controller,-0.05f,-0.03f,0.0f);//0.01 0.006
+    Current_Controller.Output_Max = 0.49f;
+    Current_Controller.Output_Min = -0.49f;
     Current_Controller.Ref = 0.0f;
-    Current_Controller.Value_I_Max = 10000.0f; 
+    Current_Controller.Value_I_Max = 1000.0f; 
 
     Pos_PID_Init(&OpenVolt_Controller,0.0f,0.0005f,0.0f);
     OpenVolt_Controller.Output_Max = 0.95f;
@@ -126,17 +129,17 @@ void Contrarian_Init()
 
 #elif Device == 2
     PR_Step = 2*PI*AC_FRE/CurLoop_FRE;
-    Pos_PID_Init(&Current_Controller,0.00f,-0.007f,0.0f);
-    Current_Controller.Output_Max = 0.48f;
-    Current_Controller.Output_Min = -0.48f;
+    Pos_PID_Init(&Current_Controller,-0.05f,-0.03f,0.0f);//(0.007f)
+    Current_Controller.Output_Max = 0.49f;
+    Current_Controller.Output_Min = -0.49f;
     Current_Controller.Ref = 0.0f;
-    Current_Controller.Value_I_Max = 10000.0f; 
+    Current_Controller.Value_I_Max = 1000.0f; 
 
     Pos_PID_Init(&OpenVolt_Controller,0.01f,0.0006f,0.0f);
     OpenVolt_Controller.Output_Max = 0.95f;
     OpenVolt_Controller.Output_Min = 0.05f;
     OpenVolt_Controller.Ref = 24.0f;
-    OpenVolt_Controller.Value_I_Max = 10000.0f;  
+    OpenVolt_Controller.Value_I_Max = 1000.0f;  
 
 #endif
 
@@ -154,6 +157,8 @@ void Contrarian_Init()
     ADC_Data.Raw_Value[0] = 0;
     ADC_Data.Raw_Value[1] = 0;
 
+    Keyboard_Input_Data[1] = 1.0f;
+    Keyboard_Input_Data[2] = 1.0f;
 
     Max_Voltage = VoltMax;
     Max_Current = CurrMax;

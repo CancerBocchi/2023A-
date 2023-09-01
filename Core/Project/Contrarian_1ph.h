@@ -70,6 +70,9 @@ extern float Keyboard_Input_Data[3];//0对应电压期望的幅值
 extern float LoopDutyOut;
 extern float VrmsFliter;
 extern float MD;
+extern float Total_Iref;
+extern float Device_Iref;//设备电流期望
+extern float I_Proportion;//电流比例
 
 extern uint8_t VoltLoop_Flag;
 extern uint8_t CurrLoop_Flag;
